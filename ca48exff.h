@@ -3,7 +3,7 @@
 #define NBIN 200
 #define REACH 3
 
-#define __CA48NFILE 4
+#define __CA48NFILE 10
 int    __ca48ex_n[__CA48NFILE];
 double __ca48ex_q[__CA48NFILE][5000];
 double __ca48ex_f[__CA48NFILE][5000];
@@ -15,25 +15,25 @@ void LoadCa48ExState(){
     int i, nscan;
     FILE *file;
 
-/*
+
     char fn[__CA48NFILE][25] = {
 	"2p", "3m1", "3p1", "3m2", "5m","5mC", "4p1", "4p2", "5p", "3m2"
     };
-*/
 
 
+/*
 //My changes
 /////////
     char fn[__CA48NFILE][25] = {
 	"Pb2", "Pb4", "Pb6", "Pb8"
     };
 /////////
-
+*/
 
     int n;
     for( i = 0; i < __CA48NFILE; i++ ){
-//	file = fopen(Form("ca48exfigs/%s_sm.txt", fn[i]), "r");
-	file = fopen(Form("Pb208_FF/%s_sm.txt", fn[i]), "r");
+	file = fopen(Form("ca48exfigs/%s_sm.txt", fn[i]), "r");
+//	file = fopen(Form("Pb208_FF/%s_sm.txt", fn[i]), "r");
 	if( !file ){ printf("Couldn't load ca48exfigs/%s_sm.txt\n", fn[i] ); exit(1);}
 
 	n = 0;

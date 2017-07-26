@@ -83,7 +83,7 @@ int prexmc(const char inputfile[] = NULL){
 
     if( inputfile == NULL ){
 	printf("Opening prexmc.inp\n");
-	finp = fopen("Pbprexmc.inp", "r");
+	finp = fopen("prexmc.inp", "r");
     } else {
 	printf("Opening %s\n", inputfile);
 	finp = fopen(inputfile, "r");
@@ -204,7 +204,7 @@ int prexmc(const char inputfile[] = NULL){
     //  Cross section is in units of mb/str, differential in Omega
     //  Asymmetry is pure
     LoadData(xsfile, sxsfile);
-
+/*
     ofstream ofs;
     ofs.open("output.txt");
     for(int i =0; i<70; i++){
@@ -213,7 +213,7 @@ int prexmc(const char inputfile[] = NULL){
 	}
     }
     ofs.close();
-
+*/
     // Initialize Spence Function
     fspence = new TF1("dspence", dspence, 0.0, 1e9, 0);
 
