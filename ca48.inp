@@ -1,0 +1,14 @@
+Ebeam		2.2   GeV
+Pe		0.85  pol
+current		100.0  uA
+duration	30    days
+nevt		1000000   events
+t		0.05	radlen
+Z		20.	
+A		48.0
+M		48.95	amu
+density		1.822   g/cm3
+xsfile		ca48_fsu.dat
+sxsfile		ca48_fsu_stretched.dat
+outfile		ca48_2200_newdelta.root
+
