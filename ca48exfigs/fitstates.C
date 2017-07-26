@@ -1,0 +1,114 @@
+#define NBIN 200
+#define REACH 3
+#define NSTATE 11
+
+void fitstates(){
+    char fn[NSTATE][25] = {
+	"2p", "3m1", "3p1", "3m2", "5mC", 
+	"5m", "4p1", "4p2", "5p", "2m", 
+	"3m3"
+    };
+
+    double scale[NSTATE] = {1.0, 1.0, 1e7, 1.0, 1.0, 
+	                    1.0, 1.0, 1.0, 0.01, 0.01, 
+			    100.0};
+
+    int npt[NSTATE];
+    double q[NSTATE][50000], f[NSTATE][50000], fsm[NSTATE][50000], qsm[NSTATE][50000];
+    double qmin[NSTATE], qmax[NSTATE];
+
+    int i,j,k;
+    int nscan;
+
+    FILE *file;
+
+    double spac, sum, weight;
+
+    TGraph *g[NSTATE], *gf[NSTATE];
+
+    TF1 *fit[NSTATE];
+
+    for( i = 0; i < NSTATE; i++ ){
+	file = fopen(Form("%s.txt", fn[i]), "r");
+
+	npt[i] = 0;
+
+	qmax[i] = -1e9;
+	qmin[i] =  1e9;
+
+	nscan = 2;
+	while( nscan==2 && !feof(file)){
+	    nscan = fscanf(file, "%lf, %lf", &q[i][npt[i]], &f[i][npt[i]] );
+	    f[i][npt[i]] *= scale[i];
+	    if( nscan == 2 ){ 
+		if( q[i][npt[i]] > qmax[i] ){ qmax[i] = q[i][npt[i]]; }
+		if( q[i][npt[i]] < qmin[i] ){ qmin[i] = q[i][npt[i]]; }
+		npt[i]++; 
+	    }
+	}
+	fclose(file);
+
+	for( j = 0; j < npt[i]; j++ ){
+	    if( i == 5 ){
+		f[i][j] -= f[i-1][j];
+		if( f[i][j] < 0 ){ f[i][j] = 0.0; }
+		// fsm is now the transverse part
+		double th = 160.0*3.14159/180;
+		double E  = 0.250;
+		double M = 0.9314*49.0;
+		double Ef  = 0.250*M/(M + E*(1.0-cos(th)));;
+		double Q2 = 2.0*E*Ef*(1.0-cos(th));
+		double q3v2 = E*E + Ef*Ef - 2.0*E*Ef*cos(th);
+		f[i][j] /= Q2/(2.0*q3v2) + tan(th/2.0)*tan(th/2.0);
+		printf("%e (%f)\n", f[i][j], Q2/(2.0*q3v2) + tan(th/2.0)*tan(th/2.0));
+	    }
+	}
+
+	spac = (qmax[i]-qmin[i])/NBIN;
+
+	printf("spac = %f %f / %d = %f\n", qmax[i], qmin[i], NBIN, spac);
+
+	file = fopen(Form("%s_sm.txt",fn[i]), "w");
+	for( j = 0; j < NBIN; j++ ){
+	    // Gaussian weight of each point
+
+	    sum = 0.0; weight = 0.0;
+	    for( k = 0; k < npt[i]; k++ ){
+		if( fabs( q[i][k] - (qmin[i] + spac*j)) < 5.0*spac ){
+//		    printf(" hit q %f (%f)\n", q[i][k], qmin[i] + spac*j );
+		    sum    += log(f[i][k])*exp( -pow(q[i][k] - (qmin[i] + spac*j), 2.0)/(2.0*spac*spac) );
+		    weight += exp( -pow(q[i][k] - (qmin[i] + spac*j), 2.0)/(2.0*spac*spac));
+		}
+	    }
+	    fsm[i][j] = exp(sum/weight);
+	    qsm[i][j] = qmin[i] + spac*j;
+
+//	    printf("%f %f\n", qsm[i][j], fsm[i][j] );
+
+	    fprintf(file, "%e\t%e\n", qsm[i][j], fsm[i][j]);
+	}
+	fclose(file);
+    }
+
+    TCanvas *c = new TCanvas();
+    c->Divide(4,3);
+
+    for( i = 0; i < NSTATE; i++ ){
+	g[i] = new TGraph(npt[i], q[i], f[i] );
+	g[i]->SetTitle(fn[i]);
+	g[i]->SetLineWidth(3);
+	g[i]->SetLineColor(kRed);
+	gf[i] = new TGraph(NBIN, qsm[i], fsm[i] );
+	gf[i]->SetLineWidth(1);
+	gf[i]->SetLineColor(kBlack);
+
+	fit[i] = new TF1(Form("fit_%d", i), "pol12" );
+	fit[i]->SetLineWidth(1);
+
+
+	c->cd(i+1);
+	gPad->SetLogy();
+	g[i]->Draw("AC");
+	gf[i]->Draw("C");
+    }
+}
