@@ -1,8 +1,8 @@
-Ebeam           2.2   GeV
+Ebeam           1.068   GeV
 Pe              0.85  pol
 current         50.0  uA
 duration        30    days
-nevt            100000   events
+nevt            1000   events
 t               0.10    radlen
 Z               82.0
 A               126.0

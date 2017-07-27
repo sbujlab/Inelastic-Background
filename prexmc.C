@@ -185,7 +185,7 @@ int prexmc(const char inputfile[] = NULL){
     double Delta = 0.003; // Energy acceptance of the detector
 
     double dmin = 1e-6; // Minimum radiated photon energy
-    double Emin = 1.5; // GeV; Minimum energy in our table
+    double Emin = _Emin; // GeV; Minimum energy in our table
 //    double Emin = 0.0; // GeV; Minimum energy in our table
     double dmax;
 
