@@ -633,6 +633,16 @@ void LoadData( char filename[],  char sfilename[]){
     FILE *f = fopen(filename, "r");
     FILE *fs = fopen(sfilename, "r");
 
+    if(!f){
+        fprintf(stderr, "Could not open %s\n", filename);
+        exit(1);
+    }
+    if(!fs){
+        fprintf(stderr, "Could not open %s\n", sfilename);
+        exit(1);
+    }
+
+
     double minE, maxE, minth, maxth;
     double dummy, sA;
 
